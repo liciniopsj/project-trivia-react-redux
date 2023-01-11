@@ -9,6 +9,12 @@ class Login extends React.Component {
     isDisabled: true,
   };
 
+  handleSettings = () => {
+    const { history } = this.props;
+
+    history.push('/settings');
+  };
+
   handleClick = async (e) => {
     e.preventDefault();
 
@@ -78,6 +84,13 @@ class Login extends React.Component {
           disabled={ isDisabled }
         >
           Play
+        </button>
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ this.handleSettings }
+        >
+          Settings
         </button>
       </form>
     );
