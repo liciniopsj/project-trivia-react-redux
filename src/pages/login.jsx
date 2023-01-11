@@ -1,10 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { fetchToken } from '../api/trivia';
 
 class Login extends React.Component {
   state = {
     name: '',
     email: '',
     isDisabled: true,
+  };
+
+  handleClick = async (e) => {
+    e.preventDefault();
+
+    const { history } = this.props;
+
+    const token = await fetchToken();
+
+    localStorage.setItem('token', token);
+
+    history.push('/game');
   };
 
   verifyButton = () => {
@@ -33,7 +47,7 @@ class Login extends React.Component {
     const { name, email, isDisabled } = this.state;
 
     return (
-      <form>
+      <form onSubmit={ this.handleClick }>
         <label htmlFor="name-input">
           Nome
           <input
@@ -59,10 +73,9 @@ class Login extends React.Component {
         </label>
         <br />
         <button
-          type="button"
+          type="submit"
           data-testid="btn-play"
           disabled={ isDisabled }
-          onClick={ this.verifyButton }
         >
           Play
         </button>
@@ -72,3 +85,7 @@ class Login extends React.Component {
 }
 
 export default Login;
+
+Login.propTypes = {
+  history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
+};
