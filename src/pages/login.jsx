@@ -1,12 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { MD5 } from 'crypto-js';
 import { fetchToken } from '../api/trivia';
+import fetchGravatar from '../api/gravatar';
 
 class Login extends React.Component {
   state = {
     name: '',
     email: '',
     isDisabled: true,
+  };
+
+  hashEmail = () => {
+    const { email } = this.state;
+
+    const emailHash = MD5(email).toString();
+    return emailHash;
   };
 
   handleSettings = () => {
@@ -18,11 +27,15 @@ class Login extends React.Component {
   handleClick = async (e) => {
     e.preventDefault();
 
+    const { name } = this.state;
     const { history } = this.props;
 
     const token = await fetchToken();
+    const gravatar = await fetchGravatar(this.hashEmail());
 
     localStorage.setItem('token', token);
+    localStorage.setItem('name', name);
+    localStorage.setItem('gravatarUrl', gravatar);
 
     history.push('/game');
   };
@@ -96,9 +109,8 @@ class Login extends React.Component {
     );
   }
 }
-
-export default Login;
-
 Login.propTypes = {
   history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
 };
+
+export default Login;

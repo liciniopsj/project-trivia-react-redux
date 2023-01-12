@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
-const INITIAL_STATE = {};
+const INITIAL_GAME_STATE = {};
 
-const exampleReducer = (state = INITIAL_STATE, action) => {
+const exampleReducer = (state = INITIAL_GAME_STATE, action) => {
   switch (action.type) {
   default:
     return state;
