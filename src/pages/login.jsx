@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { MD5 } from 'crypto-js';
+import { connect } from 'react-redux';
 import { fetchToken } from '../api/trivia';
 import fetchGravatar from '../api/gravatar';
+import {
+  saveGravatarLinkAction,
+  saveNameAction,
+  saveTokenAction,
+} from '../redux/actions';
 
 class Login extends React.Component {
   state = {
@@ -28,14 +34,16 @@ class Login extends React.Component {
     e.preventDefault();
 
     const { name } = this.state;
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
 
     const token = await fetchToken();
-    const gravatar = await fetchGravatar(this.hashEmail());
+    const gravatar = fetchGravatar(this.hashEmail());
 
     localStorage.setItem('token', token);
-    localStorage.setItem('name', name);
-    localStorage.setItem('gravatarUrl', gravatar);
+    dispatch(saveTokenAction(token));
+
+    dispatch(saveNameAction(name));
+    dispatch(saveGravatarLinkAction(gravatar));
 
     history.push('/game');
   };
@@ -109,8 +117,10 @@ class Login extends React.Component {
     );
   }
 }
+
 Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
 };
 
-export default Login;
+export default connect()(Login);
