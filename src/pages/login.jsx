@@ -1,126 +1,118 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MD5 } from 'crypto-js';
 import { connect } from 'react-redux';
-import { fetchToken } from '../api/trivia';
-import fetchGravatar from '../api/gravatar';
-import {
-  saveGravatarLinkAction,
-  saveNameAction,
-  saveTokenAction,
-} from '../redux/actions';
+import fetchQuestions from '../api/trivia';
+import { requestApi, addNomeEmail } from '../redux/actions';
 
 class Login extends React.Component {
   state = {
     name: '',
     email: '',
-    isDisabled: true,
+    disableBtn: true,
   };
 
-  hashEmail = () => {
-    const { email } = this.state;
-
-    const emailHash = MD5(email).toString();
-    return emailHash;
-  };
-
-  handleSettings = () => {
-    const { history } = this.props;
-
-    history.push('/settings');
-  };
-
-  handleClick = async (e) => {
-    e.preventDefault();
-
-    const { name } = this.state;
-    const { history, dispatch } = this.props;
-
-    const token = await fetchToken();
-    const gravatar = fetchGravatar(this.hashEmail());
-
-    localStorage.setItem('token', token);
-    dispatch(saveTokenAction(token));
-
-    dispatch(saveNameAction(name));
-    dispatch(saveGravatarLinkAction(gravatar));
-
-    history.push('/game');
-  };
-
-  verifyButton = () => {
+  verifyBtn = () => {
     const { name, email } = this.state;
-
     if (name.length !== 0 && email.length !== 0) {
-      this.setState({
-        isDisabled: false,
-      });
+      this.setState({ disableBtn: false });
     } else {
-      this.setState({
-        isDisabled: true,
-      });
+      this.setState({ disableBtn: true });
     }
   };
 
-  handleChange = ({ target }) => {
-    const { name, value } = target;
-
+  handleChange = ({ target: { name, value } }) => {
     this.setState({
       [name]: value,
-    }, this.verifyButton());
+    }, () => {
+      this.verifyBtn();
+    });
+  };
+
+  settingsBtn = () => {
+    const { history } = this.props;
+    console.log('settingsBtn history', history);
+    history.push('/settings');
+  };
+
+  handleClick = async (event) => {
+    event.preventDefault();
+    const { returnToken, history, returnNomeEmail } = this.props;
+
+    console.log('handleClick history', history);
+
+    const { name, email } = this.state;
+    await returnToken();
+    const { token } = this.props;
+    localStorage.setItem('token', token);
+    returnNomeEmail(name, email);
+    history.push('/game');
+
+    const verifyToken = 3;
+
+    const data = await fetchQuestions();
+    if (data.response_code === verifyToken) {
+      history.push('/');
+    }
   };
 
   render() {
-    const { name, email, isDisabled } = this.state;
-
+    const { disableBtn } = this.state;
     return (
-      <form onSubmit={ this.handleClick }>
-        <label htmlFor="name-input">
-          Nome
+      <div
+        data-testid="login-div"
+      >
+        <label htmlFor="name">
           <input
-            data-testid="input-player-name"
             type="text"
             name="name"
-            id="name-input"
+            placeholder="Nome"
             onChange={ this.handleChange }
-            value={ name }
+            data-testid="input-player-name"
           />
         </label>
-        <br />
-        <label htmlFor="email-input">
-          E-mail
+        <label htmlFor="email">
           <input
-            data-testid="input-gravatar-email"
             type="email"
             name="email"
-            id="email-input"
+            placeholder="E-mail"
             onChange={ this.handleChange }
-            value={ email }
+            data-testid="input-gravatar-email"
           />
         </label>
-        <br />
-        <button
-          type="submit"
-          data-testid="btn-play"
-          disabled={ isDisabled }
-        >
-          Play
-        </button>
-        <button
-          type="button"
-          data-testid="btn-settings"
-          onClick={ this.handleSettings }
-        >
-          Settings
-        </button>
-      </form>
+        <div>
+          <button
+            type="button"
+            data-testid="btn-play"
+            disabled={ disableBtn }
+            onClick={ (event) => this.handleClick(event) }
+          >
+            Play
+          </button>
+          <button
+            type="button"
+            data-testid="btn-settings"
+            onClick={ this.settingsBtn }
+          >
+            Settings
+          </button>
+        </div>
+
+      </div>
     );
   }
 }
 
 Login.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
-};
+  returnToken: PropTypes.func,
+}.isRequired;
 
-export default connect()(Login);
+const mapDispatchToProps = (dispatch) => ({
+  returnToken: () => dispatch(requestApi()),
+  returnNomeEmail: (nome, email) => dispatch(addNomeEmail(nome, email)),
+});
+
+const mapStateToProps = (state) => ({
+  token: state.gameReducer.token,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
