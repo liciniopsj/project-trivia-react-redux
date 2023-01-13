@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import '../css/question.css';
 
 import fetchQuestions from '../api/trivia';
-
 import { addScore } from '../redux/actions';
 
 class Question extends React.Component {
