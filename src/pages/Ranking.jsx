@@ -11,9 +11,9 @@ class Ranking extends React.Component {
   render() {
     return (
       <>
-        <heading>
+        <header>
           <h1 data-testid="ranking-title">Ranking</h1>
-        </heading>
+        </header>
         <section>
           <button
             type="button"
@@ -30,6 +30,6 @@ class Ranking extends React.Component {
 
 Ranking.propTypes = {
   history: PropTypes.shape(),
-}.isRequered;
+}.isRequired;
 
 export default Ranking;

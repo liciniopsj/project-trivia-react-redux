@@ -27,7 +27,9 @@ class Feedback extends React.Component {
           {assertions < MIN_AFIRMATIONS ? 'Could be better...' : 'Well Done!'}
         </p>
         <section>
+          <p>Total Score:</p>
           <p data-testid="feedback-total-score">{ score }</p>
+          <p>Questions answered corretly:</p>
           <p data-testid="feedback-total-question">{ assertions }</p>
           <button
             type="button"
@@ -56,6 +58,6 @@ const mapStateToProps = (state) => ({
 
 Feedback.propTypes = {
   history: PropTypes.shape(),
-}.isRequered;
+}.isRequired;
 
 export default connect(mapStateToProps)(Feedback);

@@ -15,7 +15,7 @@ describe('Testa o componente <Login />', () => {
     expect(emailInput).toBeInTheDocument();
     expect(button).toBeInTheDocument();
     expect(settingsButton).toBeInTheDocument();
-  })
+  });
 
   it('Testa se o botão de jogar está desabilitado e apos digitar nos inputs ele habilita.', () => {
     renderWithRouterAndRedux(<App />);

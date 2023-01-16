@@ -18,6 +18,6 @@ class Game extends React.Component {
 
 Game.propTypes = {
   history: PropTypes.shape(),
-}.isRequered;
+}.isRequired;
 
 export default Game;
