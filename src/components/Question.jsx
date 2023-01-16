@@ -177,7 +177,7 @@ class Question extends React.Component {
 Question.propTypes = {
   id: PropTypes.number,
   questions: PropTypes.array,
-}.isRequered;
+}.isRequired;
 
 const mapStateToProps = (state) => ({
   score: state.player.score,
